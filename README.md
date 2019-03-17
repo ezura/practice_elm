@@ -17,7 +17,9 @@ associated value を持てる。
 `<<`: `<<` と逆向き
 
 ### command
-`elm reactor`: 組み込みサーバ
+* `elm reactor`: 組み込みサーバ
+* `elm make {file} --debug: デバッグモード`
+* `elm install elm-community/list-extra`: パッケージのインストール例。elm.json に依存関係が記載される。使いたいファイルで `import List.Extra exposing (..)` して使う。
 
 ## VS Code
 terminal: Cmd+Shift+`
