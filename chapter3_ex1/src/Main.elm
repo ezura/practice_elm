@@ -4,6 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import List.Extra exposing (..)
 
 
 main : Program () Model Msg
@@ -39,6 +40,7 @@ init =
 type Msg
     = Input String
     | Submit
+    | Delete Int
 
 
 update : Msg -> Model -> Model
@@ -51,6 +53,11 @@ update msg model =
             { model
                 | input = ""
                 , memos = model.input :: model.memos
+            }
+
+        Delete index ->
+            { model
+                | memos = model.memos |> List.Extra.removeAt index
             }
 
 
@@ -67,10 +74,13 @@ view model =
                 [ disabled (String.length model.input < 1) ]
                 [ text "Submit" ]
             ]
-        , ul [] (List.map viewMemo model.memos)
+        , ul [] (List.indexedMap viewMemo model.memos)
         ]
 
 
-viewMemo : String -> Html Msg
-viewMemo memo =
-    li [] [ text memo ]
+viewMemo : Int -> String -> Html Msg
+viewMemo index memo =
+    li []
+        [ text memo
+        , button [ onClick (Delete index) ] [ text "Delete" ]
+        ]
