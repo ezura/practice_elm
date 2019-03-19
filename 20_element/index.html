@@ -4974,8 +4974,11 @@ var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(
-		{result: ''},
+		{core: '', repo: ''},
 		elm$core$Platform$Cmd$none);
+};
+var author$project$Main$GetCoreModule = function (a) {
+	return {$: 'GetCoreModule', a: a};
 };
 var author$project$Main$GetRepo = function (a) {
 	return {$: 'GetRepo', a: a};
@@ -5856,32 +5859,60 @@ var elm$http$Http$get = function (r) {
 };
 var author$project$Main$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'Click') {
-			return _Utils_Tuple2(
-				model,
-				elm$http$Http$get(
-					{
-						expect: elm$http$Http$expectString(author$project$Main$GetRepo),
-						url: 'https://api.github.com/repos/elm/core'
-					}));
-		} else {
-			if (msg.a.$ === 'Ok') {
-				var repo = msg.a.a;
+		switch (msg.$) {
+			case 'Click':
 				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{result: repo}),
-					elm$core$Platform$Cmd$none);
-			} else {
-				var error = msg.a.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							result: elm$core$Debug$toString(error)
-						}),
-					elm$core$Platform$Cmd$none);
-			}
+					model,
+					elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								elm$http$Http$get(
+								{
+									expect: elm$http$Http$expectString(author$project$Main$GetRepo),
+									url: 'https://api.github.com/repos/elm/svg'
+								}),
+								elm$http$Http$get(
+								{
+									expect: elm$http$Http$expectString(author$project$Main$GetCoreModule),
+									url: 'https://api.github.com/repos/elm/core'
+								})
+							])));
+			case 'GetRepo':
+				if (msg.a.$ === 'Ok') {
+					var repo = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{repo: repo}),
+						elm$core$Platform$Cmd$none);
+				} else {
+					var error = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								repo: elm$core$Debug$toString(error)
+							}),
+						elm$core$Platform$Cmd$none);
+				}
+			default:
+				if (msg.a.$ === 'Ok') {
+					var repo = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{core: repo}),
+						elm$core$Platform$Cmd$none);
+				} else {
+					var error = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								core: elm$core$Debug$toString(error)
+							}),
+						elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var author$project$Main$Click = {$: 'Click'};
@@ -5943,7 +5974,14 @@ var author$project$Main$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						elm$html$Html$text(model.result)
+						elm$html$Html$text(model.repo)
+					])),
+				A2(
+				elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						elm$html$Html$text(model.core)
 					]))
 			]));
 };

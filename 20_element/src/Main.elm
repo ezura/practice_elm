@@ -17,13 +17,14 @@ main =
 
 
 type alias Model =
-    { result : String
+    { repo : String
+    , core : String
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { result = "" }
+    ( { repo = "", core = "" }
     , Cmd.none
     )
 
@@ -31,6 +32,7 @@ init _ =
 type Msg
     = Click
     | GetRepo (Result Http.Error String)
+    | GetCoreModule (Result Http.Error String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -39,24 +41,39 @@ update msg model =
         Click ->
             ( model
               -- send request
-            , Http.get
-                { url = "https://api.github.com/repos/elm/core"
-                , expect = Http.expectString GetRepo
-                }
+            , Cmd.batch
+                [ Http.get
+                    { url = "https://api.github.com/repos/elm/svg"
+                    , expect = Http.expectString GetRepo
+                    }
+                , Http.get
+                    { url = "https://api.github.com/repos/elm/core"
+                    , expect = Http.expectString GetCoreModule
+                    }
+                ]
             )
 
         -- success
         GetRepo (Ok repo) ->
-            ( { model | result = repo }, Cmd.none )
+            ( { model | repo = repo }, Cmd.none )
 
         -- failure
         GetRepo (Err error) ->
-            ( { model | result = Debug.toString error }, Cmd.none )
+            ( { model | repo = Debug.toString error }, Cmd.none )
+
+        -- success
+        GetCoreModule (Ok repo) ->
+            ( { model | core = repo }, Cmd.none )
+
+        -- failure
+        GetCoreModule (Err error) ->
+            ( { model | core = Debug.toString error }, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
     div []
         [ button [ onClick Click ] [ text "Get repo info" ]
-        , p [] [ text model.result ]
+        , p [] [ text model.repo ]
+        , p [] [ text model.core ]
         ]
