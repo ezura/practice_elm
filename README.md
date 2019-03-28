@@ -34,3 +34,6 @@ terminal: Cmd+Shift+`
 * HTML の仕様的に正しくない構造でも作れちゃうっぽい。
 * とても楽しい
 * UI を IB で書きたくなっちゃうのは甘えなのだろうか…
+
+## Ref
+* [jinjor/elm-book](https://github.com/jinjor/elm-book)
